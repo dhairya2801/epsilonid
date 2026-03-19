@@ -1,13 +1,1853 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EpsilonID</title>
-    <link rel="stylesheet" href="./styles.css">
+    <title>Smart Epsilon | Supply Chain Intelligence Platform</title>
+    <style>
+        /* ===== CSS VARIABLES & THEME ===== */
+        :root {
+            --transition-speed: 0.6s;
+            --accent: #0066FF;
+            --accent-light: #3385FF;
+            --accent-glow: rgba(0, 102, 255, 0.15);
+            --gradient-1: linear-gradient(135deg, #0066FF 0%, #00C6FF 100%);
+            --gradient-2: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #FAFBFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F0F4FF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F8FAFF;
+            --text-primary: #0A1628;
+            --text-secondary: #4A5568;
+            --text-tertiary: #718096;
+            --border: rgba(0, 102, 255, 0.08);
+            --border-hover: rgba(0, 102, 255, 0.2);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.04);
+            --shadow-glow: 0 0 40px rgba(0, 102, 255, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --hero-overlay: linear-gradient(180deg, rgba(250,251,255,0) 0%, rgba(250,251,255,1) 100%);
+            --grid-dot: rgba(0, 102, 255, 0.06);
+            --icon-bg: linear-gradient(135deg, #EBF2FF 0%, #F0F4FF 100%);
+            --icon-color: #0066FF;
+            --toggle-bg: #E8EEFF;
+            --toggle-icon: #0066FF;
+            --stat-bg: linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #06080F;
+            --bg-secondary: #0D1117;
+            --bg-tertiary: #111827;
+            --bg-card: #111827;
+            --bg-card-hover: #162032;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-tertiary: #64748B;
+            --border: rgba(100, 160, 255, 0.08);
+            --border-hover: rgba(100, 160, 255, 0.2);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --shadow-glow: 0 0 60px rgba(0, 102, 255, 0.15);
+            --nav-bg: rgba(6, 8, 15, 0.9);
+            --hero-overlay: linear-gradient(180deg, rgba(6,8,15,0) 0%, rgba(6,8,15,1) 100%);
+            --grid-dot: rgba(100, 160, 255, 0.04);
+            --icon-bg: linear-gradient(135deg, #1A2744 0%, #162032 100%);
+            --icon-color: #3B9AFF;
+            --toggle-bg: #1A2744;
+            --toggle-icon: #FFD43B;
+            --stat-bg: linear-gradient(135deg, #111827 0%, #162032 100%);
+        }
+
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            transition: background var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Theme transition overlay */
+        .theme-transition-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .theme-transition-overlay.active {
+            animation: themeFlash 0.6s ease-out;
+        }
+        [data-theme="dark"] .theme-transition-overlay.active {
+            background: radial-gradient(circle at var(--tx, 50%) var(--ty, 50%), rgba(0,102,255,0.2) 0%, transparent 70%);
+        }
+        [data-theme="light"] .theme-transition-overlay.active {
+            background: radial-gradient(circle at var(--tx, 50%) var(--ty, 50%), rgba(255,212,59,0.15) 0%, transparent 70%);
+        }
+        @keyframes themeFlash {
+            0% { opacity: 0; transform: scale(0.8); }
+            30% { opacity: 1; }
+            100% { opacity: 0; transform: scale(2); }
+        }
+
+        /* All elements transition */
+        *, *::before, *::after {
+            transition: background-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        fill var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        stroke var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== BACKGROUND PATTERNS ===== */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+            transition: background-image var(--transition-speed);
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -40%;
+            left: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(0,102,255,0.04) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow-2 {
+            position: fixed;
+            bottom: -30%;
+            right: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(0,198,255,0.03) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -1px;
+            box-shadow: 0 2px 10px rgba(0,102,255,0.3);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent-glow);
+            opacity: 0;
+            border-radius: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::before {
+            opacity: 1;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            width: 52px;
+            height: 30px;
+            background: var(--toggle-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+            outline: none;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .toggle-thumb {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 3px;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+                        background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        [data-theme="dark"] .toggle-thumb {
+            transform: translateX(22px);
+            background: #1E293B;
+        }
+
+        .toggle-thumb svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .sun-icon { color: #FF8C00; }
+        .moon-icon { color: #FFD43B; display: none; }
+        [data-theme="dark"] .sun-icon { display: none; }
+        [data-theme="dark"] .moon-icon { display: block; }
+
+        .nav-cta {
+            background: var(--gradient-1);
+            color: white !important;
+            padding: 10px 22px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            font-size: 14px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0,102,255,0.3);
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0,102,255,0.4) !important;
+        }
+
+        /* ===== MOBILE MENU ===== */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-primary);
+        }
+
+        .mobile-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 72px;
+            overflow: hidden;
+        }
+
+        .hero-bg-shapes {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .hero-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+        }
+
+        .hero-shape-1 {
+            width: 600px; height: 600px;
+            background: rgba(0,102,255,0.08);
+            top: -200px; right: -100px;
+            animation: float1 20s ease-in-out infinite;
+        }
+
+        .hero-shape-2 {
+            width: 400px; height: 400px;
+            background: rgba(0,198,255,0.06);
+            bottom: -100px; left: -100px;
+            animation: float2 25s ease-in-out infinite;
+        }
+
+        .hero-shape-3 {
+            width: 300px; height: 300px;
+            background: rgba(102,126,234,0.06);
+            top: 30%; left: 60%;
+            animation: float3 18s ease-in-out infinite;
+        }
+
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-40px, 30px); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -40px); } }
+        @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-20px, -30px); } }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 48px;
+            line-height: 1.8;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,102,255,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,102,255,0.4) !important;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, border-color 0.3s !important;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 80px;
+            animation: fadeInUp 0.8s ease-out 1s both;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 24px 16px;
+            background: var(--stat-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SCROLL REVEAL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s !important; }
+        .reveal-delay-2 { transition-delay: 0.2s !important; }
+        .reveal-delay-3 { transition-delay: 0.3s !important; }
+        .reveal-delay-4 { transition-delay: 0.4s !important; }
+        .reveal-delay-5 { transition-delay: 0.5s !important; }
+
+        /* ===== SECTIONS ===== */
+        section {
+            padding: 120px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-label-line {
+            width: 24px;
+            height: 2px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.8;
+        }
+
+        .section-header {
+            margin-bottom: 64px;
+        }
+
+        .section-header.center {
+            text-align: center;
+        }
+
+        .section-header.center .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* ===== PLATFORM OVERVIEW ===== */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .overview-visual {
+            position: relative;
+        }
+
+        .overview-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-diagram::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+
+        .diagram-center {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            box-shadow: 0 8px 30px rgba(0,102,255,0.3);
+        }
+
+        .diagram-center svg {
+            width: 48px;
+            height: 48px;
+            color: white;
+        }
+
+        .diagram-nodes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .diagram-node {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s !important;
+        }
+
+        .diagram-node:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .overview-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .overview-feature {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s !important;
+        }
+
+        .overview-feature:hover {
+            transform: translateX(4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            background: var(--icon-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon svg {
+            width: 22px;
+            height: 22px;
+            color: var(--icon-color);
+        }
+
+        .feature-text h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feature-text p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            line-height: 1.6;
+        }
+
+        /* ===== SOLUTIONS / ECOSYSTEM ===== */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .solution-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 28px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s !important;
+            cursor: default;
+        }
+
+        .solution-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .solution-card:hover::before {
+            opacity: 1;
+        }
+
+        .solution-card:nth-child(2)::before { background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%); }
+        .solution-card:nth-child(3)::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .solution-card:nth-child(4)::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .solution-card:nth-child(5)::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .solution-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.15;
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            line-height: 1;
+        }
+
+        .solution-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--icon-bg);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .solution-icon svg {
+            width: 26px;
+            height: 26px;
+            color: var(--icon-color);
+        }
+
+        .solution-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .solution-card p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .solution-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .solution-tag {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        /* ===== INDUSTRIES ===== */
+        .industries-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .industry-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s !important;
+        }
+
+        .industry-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .industry-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--icon-bg);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .industry-icon svg {
+            width: 26px;
+            height: 26px;
+            color: var(--icon-color);
+        }
+
+        .industry-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .industry-card p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        /* ===== WHY CHOOSE US ===== */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+
+        .why-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 20px;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s !important;
+        }
+
+        .why-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .why-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--icon-bg);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .why-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--icon-color);
+        }
+
+        .why-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        /* ===== ABOUT / VISION ===== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+
+        .about-card:nth-child(2)::before {
+            background: var(--gradient-2);
+        }
+
+        .about-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-card p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 120px 0;
+        }
+
+        .cta-box {
+            background: var(--gradient-1);
+            border-radius: 24px;
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cta-box h2 {
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .cta-box p {
+            font-size: 17px;
+            color: rgba(255,255,255,0.85);
+            max-width: 500px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .cta-btn-primary {
+            background: white;
+            color: #0066FF;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+
+        .cta-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2) !important;
+        }
+
+        .cta-btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, background 0.3s !important;
+        }
+
+        .cta-btn-secondary:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.25);
+        }
+
+        .cta-checklist {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .cta-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .cta-check svg {
+            width: 18px;
+            height: 18px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 64px 0 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .footer-brand p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-top: 16px;
+            line-height: 1.7;
+            max-width: 300px;
+        }
+
+        .footer-col h4 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col a {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .why-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .solutions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .nav-cta { display: none !important; }
+            .mobile-toggle { display: block; }
+
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 72px;
+                left: 0;
+                right: 0;
+                background: var(--nav-bg);
+                backdrop-filter: blur(20px);
+                padding: 16px 24px;
+                border-bottom: 1px solid var(--border);
+                gap: 4px;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                margin-top: 48px;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .industries-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .why-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+            }
+
+            .cta-box {
+                padding: 48px 24px;
+            }
+
+            section {
+                padding: 80px 0;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .industries-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== SMOOTH ANCHOR OFFSET ===== */
+        section[id] {
+            scroll-margin-top: 80px;
+        }
+
+        /* ===== DIVIDER ===== */
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>EpsilonID</h1>
-    <p>Defining Identity. Delivering Trust.</p>
+    <!-- Background elements -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+    <div class="theme-transition-overlay" id="themeOverlay"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">SE</div>
+                <div class="logo-text">Smart <span>Epsilon</span></div>
+            </a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#platform">Platform</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#industries">Industries</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <div class="toggle-thumb">
+                        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                        <svg class="moon-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21.64 13a1 1 0 00-1.05-.14 8.05 8.05 0 01-3.37.73 8.15 8.15 0 01-8.14-8.1 8.59 8.59 0 01.25-2A1 1 0 008 2.36a10.14 10.14 0 1014 11 1 1 0 00-.36-.39z"/></svg>
+                    </div>
+                </button>
+                <a href="#contact" class="nav-cta">Request Demo</a>
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-shapes">
+            <div class="hero-shape hero-shape-1"></div>
+            <div class="hero-shape hero-shape-2"></div>
+            <div class="hero-shape hero-shape-3"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <div class="hero-badge-dot"></div>
+                    Supply Chain Intelligence Platform
+                </div>
+                <h1>
+                    Secure Products.<br>
+                    <span class="gradient-text">Intelligent Supply Chains.</span><br>
+                    Connected Consumers.
+                </h1>
+                <p class="hero-subtitle">
+                    An integrated platform that enables product authentication, supply chain visibility, brand protection, and consumer engagement through serialization, AI-powered analytics, and digital product identity.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#solutions" class="btn-primary">
+                        Explore Platform
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#contact" class="btn-secondary">
+                        Request Demo
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Integrated Modules</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">8+</span>
+                        <span class="stat-label">Industries Served</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">AI</span>
+                        <span class="stat-label">Powered Analytics</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">360&deg;</span>
+                        <span class="stat-label">Product Visibility</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Overview -->
+    <section id="platform">
+        <div class="container">
+            <div class="overview-grid">
+                <div class="overview-visual reveal">
+                    <div class="overview-diagram">
+                        <div class="diagram-center">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <div class="diagram-nodes">
+                            <div class="diagram-node">Track & Trace</div>
+                            <div class="diagram-node">Anti-Counterfeit QR</div>
+                            <div class="diagram-node">Holographic Labels</div>
+                            <div class="diagram-node">Loyalty & Rewards</div>
+                            <div class="diagram-node" style="grid-column: span 2;">AI Video Intelligence</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-header reveal">
+                        <div class="section-label">
+                            <div class="section-label-line"></div>
+                            Platform Overview
+                        </div>
+                        <h2 class="section-title">One Platform.<br>Complete Product<br>Intelligence.</h2>
+                        <p class="section-subtitle">Modern brands need more than packaging security. They need complete product intelligence across the entire lifecycle.</p>
+                    </div>
+                    <div class="overview-features">
+                        <div class="overview-feature reveal reveal-delay-1">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Protect from Counterfeiting</h4>
+                                <p>Multi-layered authentication to secure every product unit.</p>
+                            </div>
+                        </div>
+                        <div class="overview-feature reveal reveal-delay-2">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Track & Trace Movement</h4>
+                                <p>Real-time visibility across manufacturing, logistics, and retail.</p>
+                            </div>
+                        </div>
+                        <div class="overview-feature reveal reveal-delay-3">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Engage Consumers Directly</h4>
+                                <p>Build loyalty through QR-based engagement and reward programs.</p>
+                            </div>
+                        </div>
+                        <div class="overview-feature reveal reveal-delay-4">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Gain Real-time Insights</h4>
+                                <p>AI-powered analytics for data-driven supply chain decisions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Solutions -->
+    <section id="solutions">
+        <div class="container">
+            <div class="section-header center reveal">
+                <div class="section-label">
+                    <div class="section-label-line"></div>
+                    Our Ecosystem
+                    <div class="section-label-line"></div>
+                </div>
+                <h2 class="section-title">Five Verticals. One Unified Platform.</h2>
+                <p class="section-subtitle">Our five integrated modules form a powerful ecosystem, delivering complete supply chain intelligence from a single product identity platform.</p>
+            </div>
+            <div class="solutions-grid">
+                <!-- Track & Trace -->
+                <div class="solution-card reveal reveal-delay-1">
+                    <span class="solution-number">01</span>
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                    </div>
+                    <h3>Track & Trace Platform</h3>
+                    <p>End-to-end serialization and traceability system enabling real-time visibility across manufacturing, logistics, and distribution.</p>
+                    <div class="solution-features">
+                        <span class="solution-tag">Serialization</span>
+                        <span class="solution-tag">Real-time Tracking</span>
+                        <span class="solution-tag">Compliance</span>
+                        <span class="solution-tag">ERP Integration</span>
+                    </div>
+                </div>
+                <!-- Anti-Counterfeit QR -->
+                <div class="solution-card reveal reveal-delay-2">
+                    <span class="solution-number">02</span>
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m4 0v-3h-3m0 3h3"/></svg>
+                    </div>
+                    <h3>Anti-Counterfeit QR</h3>
+                    <p>Secure QR-based product verification that enables consumers and partners to instantly confirm authenticity with a smartphone scan.</p>
+                    <div class="solution-features">
+                        <span class="solution-tag">Encrypted QR</span>
+                        <span class="solution-tag">Geo-tracking</span>
+                        <span class="solution-tag">Grey Market Detection</span>
+                    </div>
+                </div>
+                <!-- Holographic Labels -->
+                <div class="solution-card reveal reveal-delay-3">
+                    <span class="solution-number">03</span>
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7h10v10H7zM12 3v4m0 10v4M3 12h4m10 0h4M5.636 5.636l2.828 2.828m7.072 7.072l2.828 2.828M18.364 5.636l-2.828 2.828M8.464 15.536l-2.828 2.828"/></svg>
+                    </div>
+                    <h3>Holographic Security Labels</h3>
+                    <p>Advanced holographic labels with nano-OVD technology to protect products against duplication and tampering.</p>
+                    <div class="solution-features">
+                        <span class="solution-tag">Nano OVD</span>
+                        <span class="solution-tag">Tamper-evident</span>
+                        <span class="solution-tag">Custom Design</span>
+                    </div>
+                </div>
+                <!-- Loyalty & Rewards -->
+                <div class="solution-card reveal reveal-delay-4">
+                    <span class="solution-number">04</span>
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3>Loyalty & Rewards</h3>
+                    <p>Consumer and channel engagement platform where customers earn and redeem loyalty points through product scans.</p>
+                    <div class="solution-features">
+                        <span class="solution-tag">Gamification</span>
+                        <span class="solution-tag">Rewards</span>
+                        <span class="solution-tag">Analytics</span>
+                        <span class="solution-tag">Campaigns</span>
+                    </div>
+                </div>
+                <!-- AI Video -->
+                <div class="solution-card reveal reveal-delay-5" style="grid-column: span 2;">
+                    <span class="solution-number">05</span>
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3>AI-Powered Video Intelligence</h3>
+                    <p>Transform existing CCTV infrastructure into operational intelligence for warehouses and logistics hubs with real-time AI video analytics, anomaly detection, and operational dashboards.</p>
+                    <div class="solution-features">
+                        <span class="solution-tag">Object Detection</span>
+                        <span class="solution-tag">Anomaly Detection</span>
+                        <span class="solution-tag">Warehouse Monitoring</span>
+                        <span class="solution-tag">Compliance</span>
+                        <span class="solution-tag">Analytics Dashboards</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Industries -->
+    <section id="industries">
+        <div class="container">
+            <div class="section-header center reveal">
+                <div class="section-label">
+                    <div class="section-label-line"></div>
+                    Industries
+                    <div class="section-label-line"></div>
+                </div>
+                <h2 class="section-title">Industries We Serve</h2>
+                <p class="section-subtitle">Delivering supply chain intelligence and brand protection across diverse sectors.</p>
+            </div>
+            <div class="industries-grid">
+                <div class="industry-card reveal reveal-delay-1">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    </div>
+                    <h4>Pharmaceuticals</h4>
+                    <p>Regulatory compliance and anti-counterfeit protection.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-2">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                    <h4>FMCG</h4>
+                    <p>Brand protection and consumer engagement insights.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-3">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h4>Agrochemicals</h4>
+                    <p>Protect farmers from counterfeit products.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-4">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                    </div>
+                    <h4>Electronics</h4>
+                    <p>Product authentication and grey market prevention.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-1">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <h4>Alcohol & Beverage</h4>
+                    <p>Prevent duplication and grey market diversion.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-2">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                    </div>
+                    <h4>Cosmetics & Personal Care</h4>
+                    <p>Build consumer trust through authentication.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-3">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>
+                    </div>
+                    <h4>Oil & Gas</h4>
+                    <p>Supply chain visibility and product traceability.</p>
+                </div>
+                <div class="industry-card reveal reveal-delay-4">
+                    <div class="industry-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    </div>
+                    <h4>Luxury & Lifestyle</h4>
+                    <p>Premium brand protection and consumer loyalty.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Why Choose Us -->
+    <section id="why">
+        <div class="container">
+            <div class="section-header center reveal">
+                <div class="section-label">
+                    <div class="section-label-line"></div>
+                    Why Smart Epsilon
+                    <div class="section-label-line"></div>
+                </div>
+                <h2 class="section-title">Why Brands Choose Us</h2>
+            </div>
+            <div class="why-grid">
+                <div class="why-card reveal reveal-delay-1">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </div>
+                    <h4>End-to-End<br>Lifecycle Visibility</h4>
+                </div>
+                <div class="why-card reveal reveal-delay-2">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h4>Proven Anti-Counterfeit<br>Technologies</h4>
+                </div>
+                <div class="why-card reveal reveal-delay-3">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                    </div>
+                    <h4>Scalable Cloud<br>Platform</h4>
+                </div>
+                <div class="why-card reveal reveal-delay-4">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h4>Powerful Consumer<br>Engagement Tools</h4>
+                </div>
+                <div class="why-card reveal reveal-delay-5">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h4>Actionable Supply<br>Chain Intelligence</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- About -->
+    <section id="about">
+        <div class="container">
+            <div class="section-header center reveal">
+                <div class="section-label">
+                    <div class="section-label-line"></div>
+                    About Us
+                    <div class="section-label-line"></div>
+                </div>
+                <h2 class="section-title">Our Vision & Mission</h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-card reveal reveal-delay-1">
+                    <h3>Our Vision</h3>
+                    <p>To create a world where every product has a trusted digital identity, enabling transparency, authenticity, and intelligence across global supply chains.</p>
+                </div>
+                <div class="about-card reveal reveal-delay-2">
+                    <h3>Our Mission</h3>
+                    <p>To empower brands with technology that protects products, connects consumers, and transforms supply chain data into actionable intelligence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-box reveal">
+                <h2>Ready to Transform Your Product Intelligence?</h2>
+                <div class="cta-checklist">
+                    <div class="cta-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+                        Product Authenticity
+                    </div>
+                    <div class="cta-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+                        Supply Chain Transparency
+                    </div>
+                    <div class="cta-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+                        Consumer Engagement
+                    </div>
+                    <div class="cta-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+                        Operational Intelligence
+                    </div>
+                </div>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-btn-primary">
+                        Request a Demo
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#" class="cta-btn-secondary">
+                        Contact / Partner
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">SE</div>
+                        <div class="logo-text">Smart <span>Epsilon</span></div>
+                    </a>
+                    <p>A unified supply chain intelligence platform enabling product authentication, brand protection, consumer engagement, and AI-powered analytics.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#solutions">Track & Trace</a></li>
+                        <li><a href="#solutions">Anti-Counterfeit QR</a></li>
+                        <li><a href="#solutions">Holographic Labels</a></li>
+                        <li><a href="#solutions">Loyalty & Rewards</a></li>
+                        <li><a href="#solutions">Video Intelligence</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Industries</h4>
+                    <ul>
+                        <li><a href="#industries">Pharmaceuticals</a></li>
+                        <li><a href="#industries">FMCG</a></li>
+                        <li><a href="#industries">Agrochemicals</a></li>
+                        <li><a href="#industries">Alcohol & Beverage</a></li>
+                        <li><a href="#industries">Electronics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Request Demo</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Partner</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Smart Epsilon. All rights reserved.</p>
+                <p>Supply Chain Intelligence Platform</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== THEME TOGGLE =====
+        const themeToggle = document.getElementById('themeToggle');
+        const overlay = document.getElementById('themeOverlay');
+        const html = document.documentElement;
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('se-theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', (e) => {
+            const rect = themeToggle.getBoundingClientRect();
+            const tx = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+            const ty = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+
+            overlay.style.setProperty('--tx', tx + '%');
+            overlay.style.setProperty('--ty', ty + '%');
+
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+
+            // Trigger overlay animation
+            overlay.classList.remove('active');
+            void overlay.offsetWidth; // reflow
+            overlay.classList.add('active');
+
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('se-theme', next);
+
+            setTimeout(() => overlay.classList.remove('active'), 600);
+        });
+
+        // ===== MOBILE MENU =====
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('open'));
+        });
+
+        // ===== SCROLL REVEAL =====
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ===== NAV SCROLL EFFECT =====
+        let lastScroll = 0;
+        const nav = document.querySelector('nav');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 100) {
+                nav.style.boxShadow = 'var(--shadow-md)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+            lastScroll = currentScroll;
+        });
+
+        // ===== SMOOTH SCROLL FOR ANCHOR LINKS =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
